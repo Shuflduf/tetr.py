@@ -1,3 +1,4 @@
+from queue import Full
 import piece
 from srs import srs
 from helper import vec2
@@ -74,4 +75,28 @@ def place(p: piece.Piece):
     for raw_pos in srs["pieces"][piece.p.idx][piece.p.rot]:
         pos = vec2(raw_pos)
         tiles[p.pos.x + pos.x][p.pos.y + pos.y] = p.idx
-        # draw_tile(surface, colours[piece.p.idx], piece.p.pos + vec2(pos))
+
+    full_lines = []
+    for y in range(rows):
+        broken = False
+        for x in range(cols):
+            if tiles[x][y] == None:
+                broken = True
+                break
+        if not broken:
+            full_lines.append(y)
+    print(full_lines)
+
+    dest = rows
+    source = rows
+    while source > 0:
+        source -= 1
+        if source in full_lines:
+            continue
+        dest -= 1
+        if dest != source:
+            for x in range(cols):
+                tiles[x][dest] = tiles[x][source]
+    for y in range(dest):
+        for x in range(cols):
+            tiles[x][y] = None
