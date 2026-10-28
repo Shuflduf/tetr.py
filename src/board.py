@@ -1,3 +1,4 @@
+from copy import copy
 from queue import Full
 import piece
 from srs import srs
@@ -7,7 +8,7 @@ import pygame
 
 
 cols, rows = 10, 20
-colours = [
+colours: list[pygame.Color] = [
     Color("#ff3030"),
     Color("#ff8330"),
     Color("#ffd130"),
@@ -30,6 +31,7 @@ def draw(surface: pygame.Surface):
     y = (h - size * (rows + 1)) / 2
     draw_outline(surface)
     draw_piece(surface)
+    draw_ghost(surface)
     draw_tiles(surface)
 
 
@@ -54,6 +56,19 @@ def draw_outline(surface: pygame.Surface):
 def draw_piece(surface: pygame.Surface):
     for pos in srs["pieces"][piece.p.idx][piece.p.rot]:
         draw_tile(surface, colours[piece.p.idx], piece.p.pos + vec2(pos))
+
+
+def draw_ghost(surface: pygame.Surface):
+    col = copy(colours[piece.p.idx])
+    col.r //= 3
+    col.g //= 3
+    col.b //= 3
+    for pos in srs["pieces"][piece.p.idx][piece.p.rot]:
+        draw_tile(
+            surface,
+            col,
+            piece.p.pos + vec2(pos) + vec2(0, piece.ghost_offset),
+        )
 
 
 def draw_tiles(surface: pygame.Surface):
@@ -85,7 +100,6 @@ def place(p: piece.Piece):
                 break
         if not broken:
             full_lines.append(y)
-    print(full_lines)
 
     dest = rows
     source = rows

@@ -24,6 +24,7 @@ GRAVITY_TIME = 500
 
 gravity_timer = 0
 p = Piece(next_from_next(), START_POS, 0)
+ghost_offset = 0
 
 
 def input(event: pygame.Event):
@@ -67,6 +68,7 @@ def try_move(vec: vec2) -> bool:
     moved = test.can_exist()
     if moved:
         p = test
+        recalc_ghost()
     return moved
 
 
@@ -77,6 +79,7 @@ def try_rotate(new_rot: int):
     test.rot = new_rot
     if test.can_exist():
         p = test
+        recalc_ghost()
 
 
 def place_piece():
@@ -84,3 +87,18 @@ def place_piece():
 
     board.place(p)
     p = Piece(next_from_next(), START_POS, 0)
+    recalc_ghost()
+
+
+def recalc_ghost():
+    global ghost_offset
+
+    ghost_offset = -1
+    test = copy(p)
+    while test.can_exist():
+        test.pos += vec2(0, 1)
+        ghost_offset += 1
+    print(ghost_offset)
+
+
+recalc_ghost()
