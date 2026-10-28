@@ -1,3 +1,4 @@
+import piece
 import json
 from piece import Piece
 import asyncio
@@ -13,7 +14,7 @@ def reset(): ...
 
 
 async def main():
-
+    delta = 0.0
     running = True
     reset()
     Piece()
@@ -21,12 +22,14 @@ async def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            else:
+                piece.input(event)
         screen.fill((0, 0, 0))
-        # screen.size
+        piece.tick(delta)
         board.draw(screen)
         pygame.display.flip()
         # screen.fli
-        clock.tick(60)
+        delta = clock.tick(60)
         await asyncio.sleep(0)
 
 

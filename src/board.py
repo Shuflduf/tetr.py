@@ -4,6 +4,7 @@ from helper import vec2
 from pygame.locals import Rect, Color
 import pygame
 
+
 cols, rows = 10, 20
 colours = [
     Color("#ff3030"),
@@ -26,14 +27,13 @@ def draw(surface: pygame.Surface):
     size = min(h / (rows + 1), w / (cols + 2))
     x = (w - size * cols) / 2
     y = (h - size * (rows + 1)) / 2
-    print(x)
     draw_outline(surface)
     draw_piece(surface)
 
 
 def draw_tile(surface: pygame.Surface, colour: pygame.Color, pos: vec2):
     pygame.draw.rect(
-        surface, colour, Rect(x + size * pos.x - 1, y + size * pos.y, size + 1, size)
+        surface, colour, Rect(x + size * pos.x, y + size * pos.y, size + 1, size + 1)
     )
 
 
@@ -52,4 +52,10 @@ def draw_outline(surface: pygame.Surface):
 def draw_piece(surface: pygame.Surface):
     for pos in srs["pieces"][piece.p.idx][piece.p.rot]:
         draw_tile(surface, colours[piece.p.idx], piece.p.pos + vec2(pos))
-        print(vec2(pos) + piece.p.pos)
+
+
+def safe_pos(pos: vec2) -> bool:
+    if pos.x < 0 or pos.x > cols - 1 or pos.y < 0 or pos.y > rows - 1:
+        return False
+
+    return tiles[pos.x][pos.y] == None
