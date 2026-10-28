@@ -1,3 +1,4 @@
+from curses import update_lines_cols
 from enum import Enum
 from bag import next_from_next
 from copy import copy
@@ -32,13 +33,18 @@ GRAVITY_TIME = 500
 DAS_TIME = 168
 ARR_TIME = 33
 SDF_TIME = 100
+LOCK_DELAY_TIME = 500
+MAX_LOCK_DELAY_TIME = 2000
 
 gravity_timer = 0
 das_timer = 0
 sdf_timer = 0
 ghost_offset = 0
+lock_delay_timer = 0
+max_lock_delay_timer = 0
+touched_ground: int | None = None
 p = Piece(next_from_next(), START_POS, 0)
-held = None
+held: int | None = None
 just_held = False
 inputs = {"left": False, "right": False, "down": False, "moving": MovingDir.NONE}
 
@@ -105,14 +111,35 @@ def input(event: pygame.Event):
                 sdf_timer = 0
 
 
+def check_lock_delay(delta: float):
+    global touched_ground, lock_delay_timer, max_lock_delay_timer
+
+    temp = copy(p)
+    temp.pos += vec2(0, 1)
+    grounded = not temp.can_exist()
+    if grounded:
+        if touched_ground == None or p.pos.y > touched_ground:
+            touched_ground = p.pos.y
+            max_lock_delay_timer = 0
+        lock_delay_timer += delta
+        max_lock_delay_timer += delta
+        if (
+            lock_delay_timer > LOCK_DELAY_TIME
+            or max_lock_delay_timer > MAX_LOCK_DELAY_TIME
+        ):
+            place_piece()
+    else:
+        lock_delay_timer = 0
+
+
 def tick(delta: float):
     global gravity_timer, das_timer, sdf_timer
 
     gravity_timer += delta
     if gravity_timer > GRAVITY_TIME:
-        moved = try_move(vec2(0, 1))
-        if not moved:
-            place_piece()
+        try_move(vec2(0, 1))
+        # if not moved:
+        #     place_piece()
         gravity_timer = 0
 
     if inputs["moving"] != MovingDir.NONE:
@@ -132,9 +159,11 @@ def tick(delta: float):
             gravity_timer = 0
             try_move(vec2(0, 1))
 
+    check_lock_delay(delta)
+
 
 def try_move(vec: vec2) -> bool:
-    global p
+    global p, lock_delay_timer
 
     test = copy(p)
     test.pos = p.pos + vec
@@ -142,17 +171,19 @@ def try_move(vec: vec2) -> bool:
     if moved:
         p = test
         recalc_ghost()
+        lock_delay_timer = 0
     return moved
 
 
 def try_rotate(new_rot: int):
-    global p
+    global p, lock_delay_timer
 
     test = copy(p)
     test.rot = new_rot
     if test.can_exist():
         p = test
         recalc_ghost()
+        lock_delay_timer = 0
     else:
         table = srs["kicks"] if p.idx != I_PIECE_IDX else srs["kicks_i"]
         for kick in table[kick_index(p.rot, new_rot)]:
@@ -160,16 +191,28 @@ def try_rotate(new_rot: int):
             if test.can_exist():
                 p = test
                 recalc_ghost()
+                lock_delay_timer = 0
                 return
 
 
 def place_piece():
-    global p, just_held
+    global \
+        p, \
+        just_held, \
+        touched_ground, \
+        gravity_timer, \
+        lock_delay_timer, \
+        max_lock_delay_timer
 
     board.place(p)
     p = Piece(next_from_next(), START_POS, 0)
     recalc_ghost()
     just_held = False
+
+    touched_ground = None
+    gravity_timer = 0
+    lock_delay_timer = 0
+    max_lock_delay_timer = 0
 
 
 def kick_index(old_rot: int, new_rot: int) -> int:
