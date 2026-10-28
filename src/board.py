@@ -58,8 +58,12 @@ def draw_outline(surface: pygame.Surface):
 
 
 def draw_piece(surface: pygame.Surface):
+    col = copy(colours[piece.p.idx])
+    col.r = int(col.r * piece.brightness())
+    col.g = int(col.g * piece.brightness())
+    col.b = int(col.b * piece.brightness())
     for pos in srs["pieces"][piece.p.idx][piece.p.rot]:
-        draw_tile(surface, colours[piece.p.idx], piece.p.pos + vec2(pos))
+        draw_tile(surface, col, piece.p.pos + vec2(pos))
 
 
 def draw_ghost(surface: pygame.Surface):

@@ -232,4 +232,8 @@ def recalc_ghost():
         ghost_offset += 1
 
 
+def brightness() -> float:
+    return 1.0 - 0.5 * lock_delay_timer / LOCK_DELAY_TIME
+
+
 recalc_ghost()
