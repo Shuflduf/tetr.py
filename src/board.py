@@ -61,8 +61,6 @@ def draw_tiles(surface: pygame.Surface):
             tile = tiles[pos_x][pos_y]
             if tile != None:
                 draw_tile(surface, colours[tile], vec2(pos_x, pos_y))
-    # for pos in srs["pieces"][piece.p.idx][piece.p.rot]:
-    # draw_tile(surface, colours[piece.p.idx], piece.p.pos + vec2(pos))
 
 
 def safe_pos(pos: vec2) -> bool:

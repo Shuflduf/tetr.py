@@ -1,3 +1,4 @@
+from bag import next_from_bag, next_from_next
 from copy import copy
 import board
 from srs import srs
@@ -22,7 +23,7 @@ START_POS = vec2(3, 0)
 GRAVITY_TIME = 500
 
 gravity_timer = 0
-p = Piece(0, START_POS, 0)
+p = Piece(next_from_next(), START_POS, 0)
 
 
 def input(event: pygame.Event):
@@ -35,12 +36,16 @@ def input(event: pygame.Event):
             case pygame.K_d:
                 try_move(vec2(1, 0))
             case pygame.K_w:
-                try_move(vec2(0, 1))
-                gravity_timer = 0.0
+                if try_move(vec2(0, 1)):
+                    gravity_timer = 0.0
             case pygame.K_LEFT:
                 try_rotate((p.rot + 3) % 4)
             case pygame.K_RIGHT:
                 try_rotate((p.rot + 1) % 4)
+            case pygame.K_s:
+                while try_move(vec2(0, 1)):
+                    pass
+                place_piece()
 
 
 def tick(delta: float):
@@ -78,4 +83,4 @@ def place_piece():
     global p
 
     board.place(p)
-    p = Piece(1, START_POS, 0)
+    p = Piece(next_from_next(), START_POS, 0)
