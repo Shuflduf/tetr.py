@@ -26,6 +26,7 @@ class MovingDir(Enum):
     RIGHT = 2
 
 
+I_PIECE_IDX = 4
 START_POS = vec2(3, 0)
 GRAVITY_TIME = 500
 DAS_TIME = 168
@@ -152,6 +153,14 @@ def try_rotate(new_rot: int):
     if test.can_exist():
         p = test
         recalc_ghost()
+    else:
+        table = srs["kicks"] if p.idx != I_PIECE_IDX else srs["kicks_i"]
+        for kick in table[kick_index(p.rot, new_rot)]:
+            test.pos = p.pos + vec2(kick)
+            if test.can_exist():
+                p = test
+                recalc_ghost()
+                return
 
 
 def place_piece():
@@ -161,6 +170,13 @@ def place_piece():
     p = Piece(next_from_next(), START_POS, 0)
     recalc_ghost()
     just_held = False
+
+
+def kick_index(old_rot: int, new_rot: int) -> int:
+    if new_rot == (old_rot + 1) % 4:
+        return old_rot * 2
+    else:
+        return (old_rot * 2 + 7) % 8
 
 
 def recalc_ghost():
