@@ -7,8 +7,6 @@ STARTING_BAG = [0, 1, 2, 3, 4, 5, 6]
 bag: list[int] = []
 next: list[int] = []
 
-print(STARTING_BAG)
-
 
 def fresh_bag():
     global bag

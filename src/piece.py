@@ -37,11 +37,13 @@ das_timer = 0
 sdf_timer = 0
 ghost_offset = 0
 p = Piece(next_from_next(), START_POS, 0)
+held = None
+just_held = False
 inputs = {"left": False, "right": False, "down": False, "moving": MovingDir.NONE}
 
 
 def input(event: pygame.Event):
-    global gravity_timer, das_timer, sdf_timer
+    global gravity_timer, das_timer, sdf_timer, held, just_held, p
 
     if event.type == pygame.KEYDOWN:
         match event.key:
@@ -67,6 +69,20 @@ def input(event: pygame.Event):
                 while try_move(vec2(0, 1)):
                     pass
                 place_piece()
+            case pygame.K_LSHIFT:
+                if not just_held:
+                    if held:
+                        temp = p.idx
+                        p = Piece(held, START_POS, 0)
+                        recalc_ghost()
+                        held = temp
+                        just_held = True
+                    else:
+                        held = p.idx
+                        p = Piece(next_from_next(), START_POS, 0)
+                        recalc_ghost()
+                        just_held = True
+
     elif event.type == pygame.KEYUP:
         match event.key:
             case pygame.K_a:
@@ -139,11 +155,12 @@ def try_rotate(new_rot: int):
 
 
 def place_piece():
-    global p
+    global p, just_held
 
     board.place(p)
     p = Piece(next_from_next(), START_POS, 0)
     recalc_ghost()
+    just_held = False
 
 
 def recalc_ghost():

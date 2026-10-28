@@ -1,11 +1,13 @@
+from bag import next
 from copy import copy
-from queue import Full
 import piece
 from srs import srs
 from helper import vec2
 from pygame.locals import Rect, Color
 import pygame
 
+NEXT_OFFSET = vec2(12, 2)
+HOLD_OFFSET = vec2(-6, 2)
 
 cols, rows = 10, 20
 colours: list[pygame.Color] = [
@@ -33,6 +35,8 @@ def draw(surface: pygame.Surface):
     draw_ghost(surface)
     draw_piece(surface)
     draw_tiles(surface)
+    draw_next(surface)
+    draw_held(surface)
 
 
 def draw_tile(surface: pygame.Surface, colour: pygame.Color, pos: vec2):
@@ -77,6 +81,26 @@ def draw_tiles(surface: pygame.Surface):
             tile = tiles[pos_x][pos_y]
             if tile != None:
                 draw_tile(surface, colours[tile], vec2(pos_x, pos_y))
+
+
+def draw_next(surface: pygame.Surface):
+    n = copy(next)
+    n.reverse()
+    for i, p in enumerate(n):
+        for pos in srs["pieces"][p][0]:
+            draw_tile(surface, colours[p], NEXT_OFFSET + vec2(pos) + vec2(0, i * 3))
+
+
+def draw_held(surface: pygame.Surface):
+    if piece.held == None:
+        return
+    col = copy(colours[piece.held])
+    if piece.just_held:
+        col.r //= 3
+        col.g //= 3
+        col.b //= 3
+    for pos in srs["pieces"][piece.held][0]:
+        draw_tile(surface, col, HOLD_OFFSET + vec2(pos))
 
 
 def safe_pos(pos: vec2) -> bool:
