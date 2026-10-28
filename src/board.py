@@ -29,6 +29,7 @@ def draw(surface: pygame.Surface):
     y = (h - size * (rows + 1)) / 2
     draw_outline(surface)
     draw_piece(surface)
+    draw_tiles(surface)
 
 
 def draw_tile(surface: pygame.Surface, colour: pygame.Color, pos: vec2):
@@ -54,8 +55,25 @@ def draw_piece(surface: pygame.Surface):
         draw_tile(surface, colours[piece.p.idx], piece.p.pos + vec2(pos))
 
 
+def draw_tiles(surface: pygame.Surface):
+    for pos_x in range(cols):
+        for pos_y in range(rows):
+            tile = tiles[pos_x][pos_y]
+            if tile != None:
+                draw_tile(surface, colours[tile], vec2(pos_x, pos_y))
+    # for pos in srs["pieces"][piece.p.idx][piece.p.rot]:
+    # draw_tile(surface, colours[piece.p.idx], piece.p.pos + vec2(pos))
+
+
 def safe_pos(pos: vec2) -> bool:
     if pos.x < 0 or pos.x > cols - 1 or pos.y < 0 or pos.y > rows - 1:
         return False
 
     return tiles[pos.x][pos.y] == None
+
+
+def place(p: piece.Piece):
+    for raw_pos in srs["pieces"][piece.p.idx][piece.p.rot]:
+        pos = vec2(raw_pos)
+        tiles[p.pos.x + pos.x][p.pos.y + pos.y] = p.idx
+        # draw_tile(surface, colours[piece.p.idx], piece.p.pos + vec2(pos))

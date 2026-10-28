@@ -1,6 +1,4 @@
 import piece
-import json
-from piece import Piece
 import asyncio
 import pygame
 import board
@@ -17,7 +15,6 @@ async def main():
     delta = 0.0
     running = True
     reset()
-    Piece()
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

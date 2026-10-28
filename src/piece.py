@@ -6,10 +6,10 @@ from helper import vec2
 
 
 class Piece:
-    def __init__(self):
-        self.idx = 0
-        self.pos = vec2(3, 0)
-        self.rot = 0
+    def __init__(self, idx: int, pos: vec2, rot: int):
+        self.idx = idx
+        self.pos = pos
+        self.rot = rot
 
     def can_exist(self):
         for offset in srs["pieces"][self.idx][self.rot]:
@@ -18,10 +18,11 @@ class Piece:
         return True
 
 
+START_POS = vec2(3, 0)
 GRAVITY_TIME = 500
 
 gravity_timer = 0
-p = Piece()
+p = Piece(0, START_POS, 0)
 
 
 def input(event: pygame.Event):
@@ -47,17 +48,21 @@ def tick(delta: float):
 
     gravity_timer += delta
     if gravity_timer > GRAVITY_TIME:
-        try_move(vec2(0, 1))
+        moved = try_move(vec2(0, 1))
+        if not moved:
+            place_piece()
         gravity_timer = 0
 
 
-def try_move(vec: vec2):
+def try_move(vec: vec2) -> bool:
     global p
 
     test = copy(p)
     test.pos = p.pos + vec
-    if test.can_exist():
+    moved = test.can_exist()
+    if moved:
         p = test
+    return moved
 
 
 def try_rotate(new_rot: int):
@@ -67,3 +72,10 @@ def try_rotate(new_rot: int):
     test.rot = new_rot
     if test.can_exist():
         p = test
+
+
+def place_piece():
+    global p
+
+    board.place(p)
+    p = Piece(1, START_POS, 0)
