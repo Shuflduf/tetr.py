@@ -37,11 +37,11 @@ das_timer = 0
 sdf_timer = 0
 ghost_offset = 0
 p = Piece(next_from_next(), START_POS, 0)
-inputs = {"left": False, "right": False, "moving": MovingDir.NONE}
+inputs = {"left": False, "right": False, "down": False, "moving": MovingDir.NONE}
 
 
 def input(event: pygame.Event):
-    global gravity_timer, das_timer
+    global gravity_timer, das_timer, sdf_timer
 
     if event.type == pygame.KEYDOWN:
         match event.key:
@@ -56,6 +56,7 @@ def input(event: pygame.Event):
                 inputs["moving"] = MovingDir.RIGHT
                 das_timer = 0
             case pygame.K_w:
+                inputs["down"] = True
                 if try_move(vec2(0, 1)):
                     gravity_timer = 0.0
             case pygame.K_LEFT:
@@ -82,10 +83,13 @@ def input(event: pygame.Event):
                     try_move(vec2(-1, 0))
                 else:
                     inputs["moving"] = MovingDir.NONE
+            case pygame.K_w:
+                inputs["down"] = False
+                sdf_timer = 0
 
 
 def tick(delta: float):
-    global gravity_timer, das_timer
+    global gravity_timer, das_timer, sdf_timer
 
     gravity_timer += delta
     if gravity_timer > GRAVITY_TIME:
@@ -103,6 +107,13 @@ def tick(delta: float):
                 case MovingDir.RIGHT:
                     try_move(vec2(1, 0))
             das_timer -= ARR_TIME
+
+    if inputs["down"]:
+        sdf_timer += delta
+        if sdf_timer > SDF_TIME:
+            sdf_timer = 0
+            gravity_timer = 0
+            try_move(vec2(0, 1))
 
 
 def try_move(vec: vec2) -> bool:

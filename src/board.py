@@ -30,8 +30,8 @@ def draw(surface: pygame.Surface):
     x = (w - size * cols) / 2
     y = (h - size * (rows + 1)) / 2
     draw_outline(surface)
-    draw_piece(surface)
     draw_ghost(surface)
+    draw_piece(surface)
     draw_tiles(surface)
 
 
