@@ -1,0 +1,37 @@
+name: Build and Deploy to WASM
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Build for web
+        run: uv run pygodide build src
+
+      - name: Deploy to web branch
+        run: |
+          cd src/build
+          rm -f pygodide-build.log
+          touch .nojekyll
+          git init -b web
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          echo "Files to be committed:"
+          git status --short
+          git commit -m "Deploy web build"
+          git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git push -f origin web
