@@ -1,3 +1,4 @@
+from pathlib import Path
 import bag
 import piece
 import asyncio
@@ -8,6 +9,7 @@ pygame.init()
 screen = pygame.display.set_mode(flags=pygame.RESIZABLE)
 clock = pygame.time.Clock()
 
+FONT = str(Path(__file__).resolve().parent.parent / "PressStart2P-Regular.ttf")
 CONTROLS: list[str] = [
     "A - LEFT",
     "D - RIGHT",
@@ -25,11 +27,11 @@ def reset():
     piece.init()
 
 
-async def main():
+async def run():
     delta = 0.0
     running = True
-    big_font = pygame.font.Font("PressStart2P-Regular.ttf", 40)
-    small_font = pygame.font.Font("PressStart2P-Regular.ttf", 25)
+    big_font = pygame.font.Font(FONT, 40)
+    small_font = pygame.font.Font(FONT, 25)
     text = big_font.render("TETR.PY", False, pygame.Color("#FFFFFF"))
     text_rect = text.get_rect().move(20.0, 20.0)
     controls_texts: list[pygame.Surface] = []
@@ -65,4 +67,5 @@ async def main():
         await asyncio.sleep(0)
 
 
-asyncio.run(main())
+def main():
+    asyncio.run(run())

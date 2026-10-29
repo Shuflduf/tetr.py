@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import TypedDict
 import json
 
@@ -8,5 +9,5 @@ class PieceTable(TypedDict):
     kicks_i: list[list[tuple[int, int]]]
 
 
-with open("srs.json") as t:
+with open(Path(__file__).with_name("srs.json")) as t:
     srs: PieceTable = json.load(t)
