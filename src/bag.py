@@ -1,7 +1,7 @@
 from copy import copy
 from random import shuffle
 
-NEXT_COUNT = 2
+NEXT_COUNT = 1
 STARTING_BAG = [0, 1, 2, 3, 4, 5, 6]
 
 bag: list[int] = []
@@ -27,6 +27,11 @@ def next_from_next() -> int:
     return n
 
 
-fresh_bag()
-for _ in range(NEXT_COUNT):
-    next.append(next_from_bag())
+def init():
+    fresh_bag()
+    next.clear()
+    for _ in range(NEXT_COUNT):
+        next.append(next_from_bag())
+
+
+# init()

@@ -1,3 +1,4 @@
+import tetr_py
 from bag import next
 from copy import copy
 import piece
@@ -117,6 +118,9 @@ def safe_pos(pos: vec2) -> bool:
 def place(p: piece.Piece):
     for raw_pos in srs["pieces"][piece.p.idx][piece.p.rot]:
         pos = vec2(raw_pos)
+        # if tiles[p.pos.x + pos.x][p.pos.y + pos.y] != None:
+        #     tetr_py.reset()
+        #     return
         tiles[p.pos.x + pos.x][p.pos.y + pos.y] = p.idx
 
     full_lines = []
@@ -142,3 +146,8 @@ def place(p: piece.Piece):
     for y in range(dest):
         for x in range(cols):
             tiles[x][y] = None
+
+
+def init():
+    global tiles
+    tiles = [[None for _ in range(rows)] for _ in range(cols)]

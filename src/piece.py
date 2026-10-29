@@ -1,4 +1,4 @@
-from curses import update_lines_cols
+import tetr_py
 from enum import Enum
 from bag import next_from_next
 from copy import copy
@@ -43,7 +43,7 @@ ghost_offset = 0
 lock_delay_timer = 0
 max_lock_delay_timer = 0
 touched_ground: int | None = None
-p = Piece(next_from_next(), START_POS, 0)
+p = Piece(0, START_POS, 0)
 held: int | None = None
 just_held = False
 inputs = {"left": False, "right": False, "down": False, "moving": MovingDir.NONE}
@@ -206,6 +206,8 @@ def place_piece():
 
     board.place(p)
     p = Piece(next_from_next(), START_POS, 0)
+    if not p.can_exist():
+        tetr_py.reset()
     recalc_ghost()
     just_held = False
 
@@ -236,4 +238,8 @@ def brightness() -> float:
     return 1.0 - 0.5 * lock_delay_timer / LOCK_DELAY_TIME
 
 
-recalc_ghost()
+def init():
+    global held, p
+    held = None
+    p = Piece(next_from_next(), START_POS, 0)
+    recalc_ghost()
