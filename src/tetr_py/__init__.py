@@ -6,7 +6,7 @@ import pygame
 import board
 
 pygame.init()
-screen = pygame.display.set_mode(flags=pygame.RESIZABLE)
+screen = pygame.display.set_mode((1280, 720), flags=pygame.RESIZABLE)
 clock = pygame.time.Clock()
 
 FONT = str(Path(__file__).resolve().parent.parent / "PressStart2P-Regular.ttf")
@@ -67,5 +67,11 @@ async def run():
         await asyncio.sleep(0)
 
 
-def main():
+# print(__name__)
+
+if __name__ == "tetr_py":
     asyncio.run(run())
+
+
+# def main():
+#     asyncio.run(run())

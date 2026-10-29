@@ -7,7 +7,7 @@ requires-python = ">=3.14"
 authors = [{ name = "Shuflduf", email = "shuflduf@gmail.com" }]
 dependencies = [
   "pygame-ce>=2.5.8",
-  "pygbag>=0.9.3",
+  "pygodide>=0.1.0",
 ]
 
 [project.scripts]
